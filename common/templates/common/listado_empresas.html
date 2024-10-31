@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% block title %}Empresas{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header ch-alt">
+        <h2>Empresas</h2>
+        
+        <ul class="actions">
+            <li>
+                <a class="buttons-tableReload" href="#" data-toggle="tooltip" data-placement="left" title="Refrescar"><i class="zmdi zmdi-refresh"></i></a>
+            </li>
+            <li class="dropdown" data-toggle="tooltip" data-placement="left" title="Columnas">
+                <a href="" data-toggle="dropdown" aria-expanded="false">
+                    <i class="zmdi zmdi-view-week"></i>
+                </a>
+                
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <a class="buttons-columnVisibility" aria-controls="empresas" data-cv-idx="0" href="#" data-column="0">Empresa</a>
+                    </li>
+                    <li>
+                        <a class="buttons-columnVisibility" aria-controls="empresas" data-cv-idx="0" href="#" data-column="1">Dirección</a>
+                    </li>
+                    <li>
+                        <a class="buttons-columnVisibility" aria-controls="empresas" data-cv-idx="0" href="#" data-column="2">Provincia</a>
+                    </li>
+                    <li>
+                        <a class="buttons-columnVisibility" aria-controls="empresas" data-cv-idx="0" href="#" data-column="3">Teléfono</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown" data-toggle="tooltip" data-placement="left" title="Descargar">
+                <a href="" data-toggle="dropdown" aria-expanded="false">
+                    <i class="zmdi zmdi-cloud-download"></i>
+                </a>
+                
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <a class="buttons-fileExport" aria-controls="empresas" data-cv-idx="0" href="#" data-button="0">Copiar</a>
+                    </li>
+                    <li>
+                        <a class="buttons-fileExport" aria-controls="empresas" data-cv-idx="0" href="#" data-button="1">Excel</a>
+                    </li>
+                    <li>
+                        <a class="buttons-fileExport" aria-controls="empresas" data-cv-idx="0" href="#" data-button="2">CSV</a>
+                    </li>
+                    <li>
+                        <a class="buttons-fileExport" aria-controls="empresas" data-cv-idx="0" href="#" data-button="3">PDF</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a class="buttons-fileExport" aria-controls="empresas" data-cv-idx="0" href="#" data-button="4">Imprimir</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="card-body table-responsive card-padding">
+        <table id="empresas" class="table table-striped table-bordered" style="width:100%" data-server-side="true" data-ajax="/api/v1/common/empresa/?format=datatables">
+            <thead>
+                <tr>
+                    <th data-data="empresa">Empresa</th>
+                    <th data-data="direccion">Dirección</th>
+                    <th data-data="get_provincia">Provincia</th>
+                    <th data-data="telefono">Teléfono</th>
+                    <th data-data="get_absolute_url">Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    $(document).ready(function() {
+        var table = $('#empresas').DataTable({
+            //dom: 'lBfrtip',
+            colReorder: true,
+            responsive: true,
+            rowReorder: true,
+            lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "Todos"] ],
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copiar',
+                    title: 'Reporte de empresas',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exportado: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'excel',
+                    title: 'Reporte de empresas',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exportado: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'csv',
+                    title: 'Reporte de empresas',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exportado: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    title: 'Reporte de empresas',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exportado: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    title: 'Reporte de empresas',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exportado: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ],
+            language: {
+                "decimal":        "",
+                "emptyTable":     "No hay datos",
+                "info":           "Mostrando registros del _START_ al _END_ de _TOTAL_",
+                "infoEmpty":      "Mostrando registros del 0 al 0 de 0",
+                "infoFiltered":   "(filtrado de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrar _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "zeroRecords":    "No se encontraron resultados",
+                "paginate": {
+                    "first":      "<<",
+                    "last":       ">>",
+                    "next":       ">",
+                    "previous":   "<"
+                },
+                "aria": {
+                    "sortAscending":  ": activar oara ordenar ascendente",
+                    "sortDescending": ": activar oara ordenar descendente"
+                }
+            },
+            columnDefs: [{
+               searchable: false,
+               targets: 4,
+               render: function(data, type, full, meta){
+                  return '<a class="btn btn-sm btn-block btn-success" target="_blank" href="' + data + '">Editar</a>';
+               }
+            }]
+        });
+        
+        $('a.buttons-tableReload').on( 'click', function (e) {
+            e.preventDefault();
+            table.ajax.reload();
+        });
+        
+        $('a.buttons-columnVisibility').on( 'click', function (e) {
+            e.preventDefault();
+            // Get the column API object
+            var column = table.column( $(this).attr('data-column') );
+            // Toggle the visibility
+            column.visible( ! column.visible() );
+        });
+        
+        $('a.buttons-fileExport').on( 'click', function (e) {
+            e.preventDefault();
+            var column = table.column( '4' );
+            column.visible( false );
+            var button_index = String($(this).attr('data-button'));
+            console.log(button_index);
+            table.button(button_index).trigger();
+            column.visible( true );
+        });
+    });
+</script>
+{% endblock %}

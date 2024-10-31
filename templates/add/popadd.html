@@ -1,0 +1,95 @@
+{% load bootstrap3 %}
+{% load i18n %}
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie9"><![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Agregar {{ field }}{% endblock %}</title>
+
+        <!-- Vendor CSS -->
+        <link href="{{ STATIC_URL }}css/animate.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/material-design-iconic-font.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/jquery.mCustomScrollbar.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/chosen.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/fileinput.min.css" rel="stylesheet">
+            
+        <!-- CSS -->
+        <link href="{{ STATIC_URL }}css/roboto.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/app.min.1.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/app.min.2.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet">
+    </head>
+    <body>
+  {{ form.media }}
+  {% load bootstrap3 %}
+</head>
+<body style="background-color: #ffffff;">
+  <div class="container">
+    <div class="card">
+      <div class="card-header ch-alt m-b-20 bgm-green">
+        <h2>Agregar {{ field }}</h2>
+      </div>
+      <div class="card-body">
+        <div class="col-sm-12">
+          <form enctype="multipart/form-data" method="POST" action="/add/{{ field }}/" class="form-horizontal" role="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">Agregar</button> | <a href="javascript:window.close()">Cancelar</a>
+            {% endbuttons %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Javascript Libraries -->
+  <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+  <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+  
+  <script src="{{ STATIC_URL }}js/moment-with-locales.js"></script>
+  <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+  <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+  <script src="{{ STATIC_URL }}js/waves.min.js"></script>
+  <script src="{{ STATIC_URL }}js/bootstrap-growl.min.js"></script>
+  <script src="{{ STATIC_URL }}js/jquery.mCustomScrollbar.concat.min.js"></script>
+  <script src="{{ STATIC_URL }}js/fileinput/fileinput.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/RelatedObjectLookups.js"></script>
+  <!-- Placeholder for IE9 -->
+  <!--[if IE 9 ]>
+      <script src="{{ STATIC_URL }}js/jquery.placeholder.min.js"></script>
+  <![endif]-->
+
+  <script src="{{ STATIC_URL }}js/functions.js"></script>
+  
+  <script>
+    //Time
+    if ($('.time-picker')[0]) {
+        $('.time-picker').datetimepicker({
+            format: 'HH:mm'
+        });
+    }
+
+    //Date
+    if ($('.date-picker')[0]) {
+        $('.date-picker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: '{{ LANGUAGE_CODE }}'
+        });
+    }
+  </script>
+  <script type="text/javascript">
+    $(function() {
+        $(":file").fileinput({'showUpload':false, 'previewFileType':'any'});
+    });
+  </script>
+  <script type="text/javascript">
+      $('select').chosen({
+          width: '100%',
+          allow_single_deselect: true
+      });
+  </script>
+</body>
+</html>

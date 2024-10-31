@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+{% load thumbnail %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-datepicker3.min.css" />
+{% endblock %}
+
+{% block content %}
+    <div class="block-header">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li class="active"> Orders by Client</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-body card-padding">
+            <div class="">
+                <div class="row">
+                    <div class="col-md-12">
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="get" action=".">
+                                    <div class="form-group">
+
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label>Initial Date</label>
+                                                {% bootstrap_field form.date_start layout='inline' %}
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label>Final Date</label>
+                                                {% bootstrap_field form.date_end layout='inline' %}
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label>Filter</label>
+                                                <button type="submit" class="btn btn-primary form-control form-inline">Filter</button>
+                                            </div>
+{#                                            <div class="col-md-3">#}
+{#                                                <label> Exportar</label>#}
+{#                                                <input class="btn btn-block btn-info" type="button" onclick="tableToExcel('customer_table', 'LMS')" value="Exportar a Excel">#}
+{#                                            </div>#}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <div>
+                        <div>
+                            <table>
+                                {% if customers %}
+                                <div class="table-responsive">
+                                    <table cellpadding="1" cellspacing="1"  class="table table-bordered table-striped" id="customers_table">
+                                        <thead>
+                                            <tr>
+                                                <th>CUSTOMER</th>
+                                                <th>TOTAL LOADS</th>
+                                                <th>VIEW LOADS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for customer in customers %}
+                                            <tr>
+                                                <th>{{ customer.name }}</th>
+                                                <td>{{ customer.total_orders }}</td>
+                                                <td><a href="{% url 'orders_list' %}?customer={{ customer.pk }}&date_start={{ date_start }}&date_end={{ date_end }}">View orders</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <h1>No data.</h1>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-footer">
+                                {% if orders %}
+                                    <!-- Pagination -->
+                                    <ul class="pagination lv-pagination">
+                                    {% if orders.has_previous %}
+                                        <li>
+                                            <a href="?page={{ orders.previous_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Back">
+                                                <i class="zmdi zmdi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for the_number in orders.paginator.page_range %}
+                                        <li{% if the_number == orders.number %} class="active"{% endif %}><a href="?page={{ the_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}">{{ the_number }}</a></li>
+                                    {% endfor %}
+                                    {% if orders.has_next %}
+                                        <li>
+                                            <a href="?page={{ orders.next_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Next">
+                                                <i class="zmdi zmdi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    </ul>
+                                    <!-- End Pagination -->
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url 'add_order' %}" class="btn btn-float btn-primary m-btn" data-placement="left" title="Add order"><i class="zmdi zmdi-plus"></i></a>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/bootstrap-datepicker.min.js"></script>
+    <!--
+<script src="{{ STATIC_URL }}js/table2CSV.js"></script>
+-->
+
+    <script>
+        $('.datepicker').datepicker();
+
+    </script>
+
+    <script>
+      $('#customers_table').dataTable({"bSort": true, aaSorting: [[0, 'desc']]});
+    </script>
+{% endblock %}

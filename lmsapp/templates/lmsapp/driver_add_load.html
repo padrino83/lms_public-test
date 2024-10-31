@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block extra_css %}
+<link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}css/chosen.min.css" rel="stylesheet">
+<link href="{% static 'css/fileinput.min.css' %}" rel="stylesheet">
+
+<style>
+.control-label {
+    font-weight: normal;
+    font-size: large;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="block-header">
+    <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="{% url 'loads_list' %}">Load's list</a></li>
+        <li class="active">{% if form.instance.order %}Edit {{ form.instance }}{% else %}New load{% endif %}</li>
+    </ol>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h2>{% if form.instance.order %}Edit {{ form.instance }}{% else %}New load{% endif %}</h2>
+    </div>
+
+    <div class="card-body card-padding">
+        <form role="form" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_field form.photob64 %}
+            <div class="row">
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.ticket %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.pickup_location %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.dropoff_location %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.product %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.quantity %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.vehicle %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15">
+                    {% bootstrap_field form.image %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <div id="my_camera" class="col-md-12 m-b-15 text-center"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <div id="results" class="col-md-12 m-b-15 text-center"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <a value="Capturar foto" onClick="take_snapshot()" class="btn btn-success"><i class="zmdi zmdi-camera-add"></i> Tomar foto</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-primary btn-sm btn-block">Save</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Script JS -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/RelatedObjectLookups.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+<script src="{% static 'js/fileinput/fileinput.min.js' %}"></script>
+<script src="{% static 'js/jquery.autocomplete.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/webcamjs/webcam.min.js' %}"></script>
+
+{{ form.media }}
+
+<script type="text/javascript">
+    $('.chosen-select').chosen({
+            width: '100%',
+            allow_single_deselect: true
+        });
+</script>
+
+<script type="text/javascript">
+    $('.date-picker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'en'
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        $(":file").fileinput({'showUpload':false, 'previewFileType':'any'});
+    });
+</script>
+
+<!--
+<script type="text/javascript">
+    $('#id_customer').autocomplete({
+        serviceUrl: '{% url "customer_autocomplete" %}',
+        paramName: 'q',
+        dataType: 'json',
+        transformResult: function(response) {
+            return {
+                suggestions: $.map(response.results, function(dataItem) {
+                    return { value: dataItem.value, data: dataItem.value };
+                })
+            };
+        }
+    });
+    $('#id_pickup_location').autocomplete({
+        serviceUrl: '{% url "customer_autocomplete" %}',
+        paramName: 'q',
+        dataType: 'json',
+        transformResult: function(response) {
+            return {
+                suggestions: $.map(response.results, function(dataItem) {
+                    return { value: dataItem.value, data: dataItem.value };
+                })
+            };
+        }
+    });
+    $('#id_dropoff_location').autocomplete({
+        serviceUrl: '{% url "customer_autocomplete" %}',
+        paramName: 'q',
+        dataType: 'json',
+        transformResult: function(response) {
+            return {
+                suggestions: $.map(response.results, function(dataItem) {
+                    return { value: dataItem.value, data: dataItem.value };
+                })
+            };
+        }
+    });
+</script>
+-->
+
+<!-- Configure a few settings and attach camera -->
+<script type="module">
+    //const stream = await navigator.mediaDevices.getUserMedia({video: {width: {ideal: 1920}, height: {ideal: 1080}}});
+    const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: "environment"}, width: {ideal: 1920}, height: {ideal: 1080}}});
+    const {width, height} = stream.getVideoTracks()[0].getSettings();
+    console.log(`${width}x${height}`);
+    Webcam.set({
+        width: width,
+        height: height,
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+        constraints: {
+            facingMode: {ideal: "environment"}
+        }
+    });
+    Webcam.attach('#my_camera');
+    document.getElementById('my_camera').setAttribute('width', '100%');
+
+    Webcam.on( 'error', function(err) {
+		// an error occurred (see 'err')
+        console.log(err);
+	} );
+</script>
+
+<script>
+    function take_snapshot() {
+        // take snapshot and get image data
+        Webcam.snap(function(data_uri) {
+            // display results in page
+            document.getElementById('results').innerHTML = '<img src="'+data_uri+'" style="max-width: 100%; width: 100%;"/>';
+            document.getElementById('id_photob64').setAttribute('value', data_uri);
+        });
+    }
+</script>
+{% endblock %}

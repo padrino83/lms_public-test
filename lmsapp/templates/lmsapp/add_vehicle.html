@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block extra_css %}
+<link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}css/chosen.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="block-header">
+    <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="{% url 'vehicles_list' %}">Vehicle's list</a></li>
+        <li class="active">{% if form.instance.name %}Edit {{ form.instance }}{% else %}New vehicle{% endif %}</li>
+    </ol>
+    <br/>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h2>{% if form.instance.name %}Edit {{ form.instance }}{% else %}New vehicle{% endif %}</h2>
+    </div>
+    <div class="card-body card-padding">                     
+        <form role="form" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 m-b-15">
+                    {% bootstrap_field form.active %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 m-b-15">
+                    {% bootstrap_field form.truck_number %}
+                </div>
+                <div class="col-md-6 m-b-15">
+                    {% bootstrap_field form.driver %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-primary btn-sm btn-block">Save</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Script JS -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/RelatedObjectLookups.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+
+<script type="text/javascript">
+    $('.chosen-select').chosen({
+            width: '100%',
+            allow_single_deselect: true
+        });
+</script>
+
+<script type="text/javascript">
+    $('.date-picker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'es'
+    });
+</script>
+{% endblock %}

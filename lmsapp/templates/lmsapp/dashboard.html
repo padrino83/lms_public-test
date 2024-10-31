@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="header__logo hidden-sm-down">
+        <h1><a href="#">DASHBOARD</a></h1>
+    </div>
+
+    <div class="mini-charts">
+        <div class="row">
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-blue">
+                    <div class="clearfix"`>
+                        <div class="chart stats-bar-2"></div>
+                        <div class="count">
+                            <small>Total Loads</small>
+                            <h2>{{ orders.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-orange">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Pending Loads</small>
+                            <h2>{{ order_pending }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-green">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Completed Loads</small>
+                            <h2>{{ order_completed }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mini-charts">
+        <div class="row">
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-lightgreen">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Total Earned</small>
+                            <h2>{{ totals|floatformat:2 }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-cyan">
+                    <div class="clearfix">
+                        <div class="chart stats-bar"></div>
+                        <div class="count">
+                            <small>Customers</small>
+                            <h2>{{ customers.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-bluegray">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Total Vehicles</small>
+                            <h2>{{ vehicles.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body card-padding">
+            <div class="">
+                <div class="row">
+                    <div class="col-md-12">
+                    <div class="text-capitalize">
+                        <h1><a href="#">LOADS</a></h1>
+                    </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="get" action=".">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="Search by id" class="form-control" name="q" value="{{ q }}">
+                                        {% for key, value in filters.items %}{% if key != 'q' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id='tabla' cellpadding="1" cellspacing="1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr style="border-style:solid  !important;">
+                                        <th class="text-center">ID</th>
+                                        <th class="text-center">Truck</th>
+                                        <th class="text-center">Driver</th>
+                                        <th class="text-center">Pick up</th>
+                                        <th class="text-center">Drop off</th>
+                                        <th class="text-center">Tons</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for order in orders %}
+                                    <tr style="border-style:solid  !important;">
+                                        <td class="text-center">{{ order.pk }}</td>
+                                        <td class="text-center">{{ order.vehicle }}</td>
+                                        <td class="text-center">{{ order.driver|default:'-' }}</td>
+                                        <td class="text-center">{{ order.pickup_location.name }}</td>
+                                        <td class="text-center">{{ order.dropoff_location.name }}</td>
+                                        <td class="text-center">{{ order.quantity|floatformat:2 }}</td>
+                                        <td class="text-center">{{ order.status }}</td>
+                                        <td>
+                                            {% if user.userprofile.is_operator %}
+                                            <a href="{% url 'order_details' pk=order.pk %}" class="btn btn-sm btn-icon btn-info" title="Order Details"><span class="zmdi zmdi-eye zmdi-hc-fw"></span></a>
+                                            {% endif %}
+                                            {% if user.userprofile.is_driver and user.userprofile.get_actual_vehicles.count %}
+                                            {% if not order.vehicle %}
+                                            <a href="{% url 'autoassign_order' pk=order.pk %}" class="btn btn-sm btn-block btn-success" title="Assign to me"><span class="zmdi zmdi-check-circle"></span> Assign to me</a>
+                                            {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-footer">
+                                {% if orders %}
+                                    <!-- Pagination -->
+                                    <ul class="pagination lv-pagination">
+                                    {% if orders.has_previous %}
+                                        <li>
+                                            <a href="?page={{ orders.previous_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Back">
+                                                <i class="zmdi zmdi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for the_number in orders.paginator.page_range %}
+                                        <li{% if the_number == orders.number %} class="active"{% endif %}><a href="?page={{ the_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}">{{ the_number }}</a></li>
+                                    {% endfor %}
+                                    {% if orders.has_next %}
+                                        <li>
+                                            <a href="?page={{ orders.next_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Next">
+                                                <i class="zmdi zmdi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    </ul>
+                                    <!-- End Pagination -->
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

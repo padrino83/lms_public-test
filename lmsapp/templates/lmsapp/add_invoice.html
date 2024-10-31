@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load bootstrap3 %}
+{% load thumbnail %}
+
+{% block title %}{% if form.instance.name %}Edit {{ form.instance }}{% else %}New invoice{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<link href="{% static 'css/chosen.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="block-header">
+    <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="{% url 'invoice_list' %}">Invoices</a></li>
+        {% if form.instance.customer %}
+        <li><a href="{% url 'invoice_details' pk=form.instance.pk %}">{{ form.instance }}</a></li>
+        <li class="active">Edit</li>
+        {% else %}
+        <li class="active">New invoice</li>
+        {% endif %}
+    </ol>
+    <ul class="actions">
+        <li>
+            <a href="{% url 'invoice_list' %}">
+                <i class="zmdi zmdi-undo"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h2>{% if form.instance.customer %}Edit {{ form.instance }}{% else %}New invoice{% endif %}</h2>
+    </div>
+    <div class="card-body card-padding">
+        <form role="form" action="." method="post" enctype="multipart/form-data" class="form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.code %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.number %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.state %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.date %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.date_start %}
+                </div>
+                <div class="col-md-4 m-b-15">
+                    {% bootstrap_field form.date_end %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15">
+                    {% bootstrap_field form.customer %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 m-b-15">
+                    <hr>
+                </div>
+                <div class="col-md-6 m-b-15">
+                    <button type="submit" class="btn btn-block btn-success">Save</button>
+                </div>
+                <div class="col-md-6 m-b-15">
+                    <a href="{% url 'invoice_list' %}" class="btn btn-block btn-default">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chosen.jquery.min.js' %}"></script>
+<script src="{{ STATIC_URL }}js/moment-with-locales.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        //Date
+        $('#id_date').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'es'
+        });
+        $('#id_date_start').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'es'
+        });
+        $('#id_date_end').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'es'
+        });
+    });
+</script>
+{% endblock %}

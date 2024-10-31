@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user.userprofile and user.userprofile.is_operator %}
+    <div class="mini-charts">
+        <!--
+        <div class="row">
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-blue">
+                    <div class="clearfix"`>
+                        <div class="chart stats-bar-2"></div>
+                        <div class="count">
+                            <small>Total Orders</small>
+                            <h2>{{ orders.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-orange">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Pending Orders</small>
+                            <h2>{{ order_pending }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+                <div class="mini-charts-item bgm-green">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Completed Orders</small>
+                            <h2>{{ order_completed }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        -->
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="mini-charts-item bgm-blue">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Total Loads</small>
+                            <h2>{{ loads }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="mini-charts-item bgm-orange">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Pending Loads</small>
+                            <h2>{{ loads_pending }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="col-sm-4">
+                <div class="mini-charts-item bgm-green">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Completed Loads</small>
+                            <h2>{{ loads_completed }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <div class="mini-charts">
+        <div class="row">
+            <div class="col-sm-6 col-md-6">
+                <div class="mini-charts-item bgm-lightgreen">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Total Earned</small>
+                            <h2>{{ totals|floatformat:2 }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-6">
+                <div class="mini-charts-item bgm-bluegray">
+                    <div class="clearfix">
+                        <div class="chart stats-line"></div>
+                        <div class="count">
+                            <small>Total Vehicles</small>
+                            <h2>{{ vehicles.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>ORDERS TODAY</h2>
+        </div>
+        <div class="card-body card-padding">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="get" action=".">
+                        <div class="form-group">
+                            <input type="text" placeholder="Search by id" class="form-control" name="q" value="{{ q }}">
+                            {% for key, value in filters.items %}{% if key != 'q' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <table id='tabla' cellpadding="1" cellspacing="1" class="table table-inner table-vmiddle table-bordered table-striped">
+                    <thead>
+                        <tr style="border-style:solid  !important;">
+                            <th class="text-center">Pick up</th>
+                            <th class="text-center">Drop off</th>
+                            <th class="text-center">Product</th>
+                            {% if user.userprofile.is_operator %}
+                            <th class="text-center">Loads</th>
+{#                            <th class="text-center">Status</th>#}
+                            {% endif %}
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr style="border-style:solid  !important;">
+                            <td class="text-center">{{ order.pickup_location.name }}</td>
+                            <td class="text-center">{{ order.dropoff_location.name }}</td>
+                            <td class="text-center">{{ order.product }}</td>
+                            {% if user.userprofile.is_operator %}
+                            <td class="text-center">{{ order.load_set.count }} of {{ order.loads }}</td>
+{#                            <td class="text-center">{{ order.status }}</td>#}
+                            {% endif %}
+                            <td>
+                                {% if user.userprofile.is_operator %}
+                                <a href="{% url 'order_details' pk=order.pk %}" class="btn btn-sm btn-icon btn-info" title="Order Details"><span class="zmdi zmdi-eye zmdi-hc-fw"></span></a>
+                                <a data-toggle="modal" href="#modalOrderDelete-{{ order.pk }}" class="btn btn-sm btn-icon btn-danger" title="Delete order">
+                                    <span class="zmdi zmdi-delete zmdi-hc-fw"></span>
+                                </a>
+                                {% endif %}
+                                {% if user.userprofile.is_driver and user.userprofile.get_actual_vehicles.count %}
+                                {% if order.can_get_loads %}
+                                <a href="{% url 'add_load' pk=order.pk %}" class="btn btn-sm btn-block btn-success" title="Add load"><span class="zmdi zmdi-check-circle"></span> Add load</a>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-footer">
+                    {% if orders %}
+                    <!-- Pagination -->
+                    <ul class="pagination lv-pagination">
+                        {% if orders.has_previous %}
+                        <li>
+                            <a href="?page={{ orders.previous_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Back">
+                                <i class="zmdi zmdi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for the_number in orders.paginator.page_range %}
+                        <li{% if the_number == orders.number %} class="active"{% endif %}><a href="?page={{ the_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}">{{ the_number }}</a></li>
+                        {% endfor %}
+                        {% if orders.has_next %}
+                        <li>
+                            <a href="?page={{ orders.next_page_number }}{% for key, value in filters.items %}{% if value %}&{{ key }}={% if value.pk %}{{ value.pk }}{% else %}{{ value }}{% endif %}{% endif %}{% endfor %}" aria-label="Next">
+                                <i class="zmdi zmdi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <!-- End Pagination -->
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for order in orders %}
+    <!-- Modal delete order {{ forloop.count }} -->	
+    <div class="modal fade" id="modalOrderDelete-{{ order.pk }}" tabindex="-1" role="dialog" aria-hidden="true" data-modal-color="red">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="zmdi zmdi-delete"></i> Delete order</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            Do you really want to proceed deleting order {{ order }}?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'order_delete' pk=order.pk %}" class="btn btn-danger">Yes, delete</a>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="row">
+        <div class="col-md-12 jumbotron text-center">
+            <h1><i class="zmdi zmdi-local-shipping"></i></h1>
+            <p>Loads</p>
+            <p><a class="btn btn-success btn-block" href="{% url 'driver_add_load' %}" role="button"><i class="zmdi zmdi-plus-circle-o"></i> Add Load</a></p>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

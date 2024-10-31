@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load bootstrap3 %}
+{% load thumbnail %}
+
+{% block extra_css %}
+<link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/chosen.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/datatables.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="block-header">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li class="active"> Orders list</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-header ch-alt">
+            <h2>Orders{% if user.userprofile and user.userprofile.is_operator %} <small><strong>Total amount: ${{ totals|floatformat:2 }} | Total completed: ${{ totals_completed|floatformat:2 }}</strong></small>{% endif %}</h2>
+            <ul class="actions">
+                <li class="dropdown" data-toggle="tooltip" data-placement="left" title="Download">
+                    <a href="" data-toggle="dropdown" aria-expanded="false">
+                        <i class="zmdi zmdi-cloud-download"></i>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li>
+                            <a class="buttons-fileExport" aria-controls="aerial_exports" data-cv-idx="0" href="#"
+                               data-button="0">Copy</a>
+                        </li>
+                        <li>
+                            <a class="buttons-fileExport" aria-controls="aerial_exports" data-cv-idx="0" href="#"
+                               data-button="1">Excel</a>
+                        </li>
+                        <li>
+                            <a class="buttons-fileExport" aria-controls="aerial_exports" data-cv-idx="0" href="#"
+                               data-button="2">CSV</a>
+                        </li>
+                        <li>
+                            <a class="buttons-fileExport" aria-controls="aerial_exports" data-cv-idx="0" href="#"
+                               data-button="3">PDF</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="buttons-fileExport" aria-controls="aerial_exports" data-cv-idx="0" href="#"
+                               data-button="4">Print</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body card-padding">
+            <form method="get" action=".">
+                <div class="form-group">
+                    <input type="text" placeholder="Search by Customer's name" class="form-control" name="q" value="{{ q }}">
+                    <!--{% for key, value in filters.items %}{% if key != 'q' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}-->
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        {% bootstrap_field form.status %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.date_start %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.date_end %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-sm btn-block btn-success"><i class="zmdi zmdi-search"></i> Filter</button>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table id='tabla' cellpadding="1" cellspacing="1" class="table table-bordered table-striped datatable">
+                    <thead>
+                        <tr style="border-style:solid  !important;">
+                            <th class="text-center">DATE</th>
+{#                            <th class="text-center">CUSTOMER</th>#}
+                            <th class="text-center">PICKUP LOCATION</th>
+                            <th class="text-center">DROPOFF LOCATION</th>
+                            <th class="text-center">PRODUCT</th>
+                            {% if user.userprofile and user.userprofile.is_operator %}
+                            <th class="text-center">LOADS</th>
+                            <th class="text-center">RATE</th>
+                            <th class="text-center">TOTAL</th>
+{#                            <th class="text-center">STATUS</th>#}
+                            {% endif %}
+                            <th class="text-center">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for order in orders %}
+                        <tr style="border-style:solid  !important;">
+                            <td class="text-center">{{ order.date_order|date:'Y-m-d H:i:s' }}</td>
+{#                            <td class="text-center">{{ order.customer.name }}</td>#}
+                            <td class="text-center">{{ order.pickup_location.name }}</td>
+                            <td class="text-center">{{ order.dropoff_location.name }}</td>
+                            <td class="text-center">{{ order.product }}</td>
+                            {% if user.userprofile and user.userprofile.is_operator %}
+                            <td class="text-center">{{ order.load_set.all.count }} of {{ order.loads }}</td>
+                            <td class="text-center">{{ order.price }}</td>
+                            <td class="text-center">{{ order.total_amount|floatformat:2 }}</td>
+{#                            <td class="text-center">{{ order.get_status_display }}</td>#}
+                            {% endif %}
+                            <td class="text-center">
+                                <a href="{% url 'order_details' pk=order.pk %}" class="btn btn-sm btn-icon btn-info" title="View details"><span class="zmdi zmdi-eye zmdi-hc-fw"></span> </a>
+                                {% if user.userprofile and user.userprofile.is_operator %}
+                                <a href="{% url 'edit_order' order.pk %}" class="btn btn-sm btn-icon btn-primary" title="Edit order"><span class="zmdi zmdi-edit zmdi-hc-fw"></span></a>
+                                <a href="{% url 'order_clone' order.pk %}" class="btn btn-sm btn-icon bgm-purple" title="Clone order"><span class="zmdi zmdi-copy"></span></a>
+                                <a data-toggle="modal" href="#modalOrderDelete-{{ order.pk }}" class="btn btn-sm btn-icon btn-danger" title="Delete order">
+                                    <span class="zmdi zmdi-delete zmdi-hc-fw"></span>
+                                </a>
+                                {% endif %}
+                                {% if order.can_get_loads %}
+                                <a href="{% url 'add_load' pk=order.pk %}" class="btn btn-sm btn-icon btn-success" title="Add load"><span class="zmdi zmdi-truck"></span></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url 'add_order' %}" class="btn btn-float btn-primary m-btn" data-placement="left" title="Add order"><i class="zmdi zmdi-plus"></i></a>
+
+    {% if user.userprofile and user.userprofile.is_operator %}
+    {% for order in orders %}
+    <!-- Modal delete order {{ forloop.count }} -->	
+    <div class="modal fade" id="modalOrderDelete-{{ order.pk }}" tabindex="-1" role="dialog" aria-hidden="true" data-modal-color="red">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="zmdi zmdi-delete"></i> Delete order</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            Do you really want to proceed deleting order {{ order }}?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'order_delete' pk=order.pk %}" class="btn btn-danger">Yes, delete</a>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'js/chosen.jquery.min.js' %}"></script>
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+
+    <script>
+        $('.datepicker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'en'
+        });
+    </script>
+
+    <script type="text/javascript">
+        $.extend( $.fn.dataTable.defaults, {
+            colReorder: true,
+            //responsive: true,
+            rowReorder: true,
+            lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            order: [[ 0, "desc" ]],
+            paging: false,
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    title: 'Order list',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exported: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'excel',
+                    title: 'Order list',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exported: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'csv',
+                    title: 'Order list',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exported: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    title: 'Order list',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exported: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    title: 'Order list',
+                    messageTop: '{{ date_start }} - {{ date_end }}',
+                    messageBottom: 'Exported: {% now "SHORT_DATETIME_FORMAT" %}',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ],
+            //language: {
+                //"decimal":        "",
+                //"emptyTable":     "No hay datos",
+                //"info":           "Mostrando registros del _START_ al _END_ de _TOTAL_",
+                //"infoEmpty":      "Mostrando registros del 0 al 0 de 0",
+                //"infoFiltered":   "(filtrado de _MAX_ registros)",
+                //"infoPostFix":    "",
+                //"thousands":      ",",
+                //"lengthMenu":     "Mostrar _MENU_ registros",
+                //"loadingRecords": "Cargando...",
+                //"processing":     "Procesando...",
+                //"search":         "Buscar:",
+                //"zeroRecords":    "No se encontraron resultados",
+                //"paginate": {
+                    //"first":      "<<",
+                    //"last":       ">>",
+                    //"next":       ">",
+                    //"previous":   "<"
+                //},
+                //"aria": {
+                    //"sortAscending":  ": activar para ordenar ascendente",
+                    //"sortDescending": ": activar para ordenar descendente"
+                //}
+            //},
+            columnDefs: [
+                {
+                    searchable: false,
+                    targets: 8
+                }
+            ]
+        } );
+        $(function(){
+            var table = $('#tabla').DataTable();
+        
+            $('a.buttons-tableReload').on( 'click', function (e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
+            
+            $('a.buttons-columnVisibility').on( 'click', function (e) {
+                e.preventDefault();
+                // Get the column API object
+                var column = table.column( $(this).attr('data-column') );
+                // Toggle the visibility
+                column.visible( ! column.visible() );
+            });
+            
+            $('a.buttons-fileExport').on( 'click', function (e) {
+                e.preventDefault();
+                var column = table.column( '8' );
+                column.visible( false );
+                var button_index = String($(this).attr('data-button'));
+                console.log(button_index);
+                table.button(button_index).trigger();
+                column.visible( true );
+            });
+        });
+    </script>
+{% endblock %}

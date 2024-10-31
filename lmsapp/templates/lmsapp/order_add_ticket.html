@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block content %}
+<div class="block-header">
+    <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="{% url 'orders_list' %}">Load's list</a></li>
+        <li>{{ order }}</li>
+        <li class="active">Add ticket</li>
+    </ol>
+    <br/>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h2>{{ order }} - Add ticket</h2>
+    </div>
+
+    <div class="card-body card-padding">
+        <form role="form" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div>
+                    {% bootstrap_form form %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <div id="my_camera"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <div id="results" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m-b-15 text-center">
+                    <a value="Capturar foto" onClick="take_snapshot()" class="btn btn-success"><i class="zmdi zmdi-camera-add"></i> Tomar foto</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-primary btn-sm btn-block">Save</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Script JS -->
+<script type="text/javascript" src="{% static 'js/webcamjs/webcam.min.js' %}"></script>
+
+<!-- Configure a few settings and attach camera -->
+<script language="JavaScript">
+    Webcam.set({
+        width: 1024,
+        height: 768,
+        image_format: 'jpeg',
+        jpeg_quality: 90
+    });
+    Webcam.attach('#my_camera');
+
+    Webcam.on( 'error', function(err) {
+		// an error occurred (see 'err')
+        console.log(err);
+	} );
+
+    <!-- Code to handle taking the snapshot and displaying it locally -->
+    function take_snapshot() {
+        // take snapshot and get image data
+        Webcam.snap(function(data_uri) {
+            // display results in page
+            document.getElementById('results').innerHTML = '<img src="'+data_uri+'"/>';
+            document.getElementById('id_photob64').setAttribute('value', data_uri);
+        });
+    }
+</script>
+{% endblock %}

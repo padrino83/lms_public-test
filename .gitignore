@@ -1,0 +1,7 @@
+# Personales
+*.logs
+*.pyc
+.DStore
+.DS_Store
+.idea/
+data.db

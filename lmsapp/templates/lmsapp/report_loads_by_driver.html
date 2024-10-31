@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+{% load thumbnail %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/chosen.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="block-header">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li class="active">Loads by driver</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-body card-padding">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="get" action=".">
+                        <div class="form-group">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Driver</label>
+                                    {% bootstrap_field form.driver layout='inline' %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Product</label>
+                                    {% bootstrap_field form.product layout='inline' %}
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Initial Date</label>
+                                    {% bootstrap_field form.start_date layout='inline' %}
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Final Date</label>
+                                    {% bootstrap_field form.end_date layout='inline' %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-sm btn-block btn-success"><i class="zmdi zmdi-search"></i> Filter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    {% if drivers %}
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1"  class="table table-bordered table-striped" id="vehicles_table">
+                            <thead>
+                                <tr>
+                                    <th>DRIVER</th>
+                                    <th>TOTAL LOADS</th>
+                                    <th>VIEW LOADS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for driver in drivers %}
+                                <tr>
+                                    <th>{{ driver.get_full_name|default:driver }}</th>
+                                    <td>{{ driver.total_orders }}</td>
+                                    <td><a href="{% url 'loads_list' %}?driver={{ driver.pk }}&date_start={{ date_start }}&date_end={{ date_end }}">View loads</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <h4>No data.</h4>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url 'add_order' %}" class="btn btn-float btn-primary m-btn" data-placement="left" title="Add order"><i class="zmdi zmdi-plus"></i></a>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+    <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+    <!--
+<script src="{{ STATIC_URL }}js/table2CSV.js"></script>
+-->
+
+    <script>
+        $('.datepicker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'en'
+        });
+    </script>
+
+    <script>
+      $('#vehicles_table').dataTable({"bSort": true, aaSorting: [[0, 'desc']]});
+    </script>
+{% endblock %}

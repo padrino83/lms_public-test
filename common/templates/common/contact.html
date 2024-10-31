@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load thumbnail %}
+{% load bootstrap3 %}
+
+{% block title %}Contacto{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1 class="title">Contacto</h1>
+      <form id="theme-contact" method="post" role="form" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+        <button type="submit" class="btn btn-block btn-submit">Enviar</button>
+        {% endbuttons %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

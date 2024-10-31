@@ -1,0 +1,147 @@
+{% load static %}
+{% load bootstrap3 %}
+{% load i18n %}
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie9"><![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Inicio{% endblock %}</title>
+
+        <!-- Vendor CSS -->
+        <link href="{% static 'css/animate.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/material-design-iconic-font.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/jquery.mCustomScrollbar.min.css' %}" rel="stylesheet">
+        {% block extra_css %}{% endblock %}
+
+        <!-- CSS -->
+        <link href="{% static 'css/roboto.css' %}" rel="stylesheet">
+        <link href="{% static 'css/app.min.1.css' %}" rel="stylesheet">
+        <link href="{% static 'css/app.min.2.css' %}" rel="stylesheet">
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+    </head>
+    <body class="login-content">
+        {% block content %}{% endblock %}
+
+        <!-- Page Loader -->
+        <div class="page-loader">
+            <div class="preloader pls-blue">
+                <svg class="pl-circular" viewBox="25 25 50 50">
+                    <circle class="plc-path" cx="50" cy="50" r="20" />
+                </svg>
+
+                <p>Espere, por favor...</p>
+            </div>
+        </div>
+
+        <!-- Older IE warning message -->
+        <!--[if lt IE 9]>
+            <div class="ie-warning">
+                <h1 class="c-white">Warning!!</h1>
+                <p>You are using an outdated version of Internet Explorer, please upgrade <br/>to any of the following web browsers to access this website.</p>
+                <div class="iew-container">
+                    <ul class="iew-download">
+                        <li>
+                            <a href="http://www.google.com/chrome/">
+                                <img src="{% static 'img/browsers/chrome.png" alt="">
+                                <div>Chrome</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.mozilla.org/en-US/firefox/new/">
+                                <img src="{% static 'img/browsers/firefox.png" alt="">
+                                <div>Firefox</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.opera.com">
+                                <img src="{% static 'img/browsers/opera.png" alt="">
+                                <div>Opera</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.apple.com/safari/">
+                                <img src="{% static 'img/browsers/safari.png" alt="">
+                                <div>Safari</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">
+                                <img src="{% static 'img/browsers/ie.png" alt="">
+                                <div>IE (New)</div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <p>Sorry for the inconvenience!</p>
+            </div>
+        <![endif]-->
+
+        <!-- Javascript Libraries -->
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+        <script src="{% static 'js/waves.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap-growl.min.js' %}"></script>
+        <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        {% block extra_js %}{% endblock %}
+
+        <!-- Placeholder for IE9 -->
+        <!--[if IE 9 ]>
+            <script src="{% static 'js/jquery.placeholder.min.js' %}"></script>
+        <![endif]-->
+
+        <script src="{% static 'js/functions.js' %}"></script>
+
+        {% block extra_scripts %}{% endblock %}
+        <script>
+            $(window).load(function(){
+                function notify(message, type){
+                    $.growl({
+                        message: message
+                    },{
+                        type: type,
+                        allow_dismiss: false,
+                        label: 'Cancelar',
+                        className: 'btn-xs btn-inverse',
+                        placement: {
+                            from: 'top',
+                            align: 'right'
+                        },
+                        delay: 2500,
+                        animate: {
+                            enter: 'animated fadeIn',
+                            exit: 'animated fadeOut'
+                        },
+                        offset: {
+                            x: 20,
+                            y: 85
+                        }
+                    });
+                };
+                {% if messages %}
+                {% for message in messages %}
+                // create the notification
+                notify('{{ message|safe|escape }}', 'inverse');
+                {% endfor %}
+                {% endif %}
+                {% if form.non_field_errors %}
+                {% for message in form.non_field_errors %}
+                // create the notification
+                notify('{{ message|safe|escape }}', 'inverse');
+                {% endfor %}
+                {% endif %}
+                {% for field in form %}
+                {% if field.errors %}
+                {% for message in field.errors %}
+                // create the notification
+                notify('{{ message|safe|escape }}', 'inverse');
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+            });
+        </script>
+    </body>
+</html>

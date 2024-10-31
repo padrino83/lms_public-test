@@ -1,0 +1,85 @@
+<header id="header" class="clearfix" data-current-skin="blue">
+    <ul class="header-inner">
+        <li id="menu-trigger" data-trigger="#sidebar">
+            <div class="line-wrap">
+                <div class="line top"></div>
+                <div class="line center"></div>
+                <div class="line bottom"></div>
+            </div>
+        </li>
+
+        <li class="logo hidden-xs">
+            <a href="/">LOAD MANAGEMENT SYSTEM</a>
+        </li>
+
+        <li class="pull-right">
+            <ul class="top-menu">
+                <li id="toggle-width">
+                    <div class="toggle-switch">
+                        <input id="tw-switch" type="checkbox" hidden="hidden">
+                        <label for="tw-switch" class="ts-helper"></label>
+                    </div>
+                </li>
+
+                {% if user.userprofile and user.userprofile.is_operator %}
+                <li class="dropdown">
+                    <a data-toggle="dropdown" href="">
+                        <i class="tm-icon zmdi zmdi-notifications{% if alarms %}-active c-red{% endif %}"></i>
+                        {% if alarms %}
+                        <i class="tmn-counts">{{ alarms.count }}</i>
+                        {% endif %}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg pull-right">
+                        <div class="listview" id="notifications">
+                            <div class="lv-header">
+                                 Notifications
+                                <ul class="actions">
+                                    <li class="dropdown">
+                                        <a href="" data-clear="notification">
+                                            <i class="zmdi zmdi-check-all"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="lv-body">
+                                {% for alarm in alarms|slice:"10" %}
+                                <a class="lv-item" href="{% url 'order_details' pk=alarm.pk %}">
+                                    <div class="media">
+                                        <div class="pull-left">
+                                            <i class="tm-icon zmdi zmdi-notifications-active c-red"></i>
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="lv-title">{{ alarm }}</div>
+                                        </div>
+                                    </div>
+                                 </a>
+                                {% empty %}
+                                <div class="media text-center">
+                                    <div class="media-body">
+                                        <div class="lv-title">Nothing new</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% if alarms %}
+                                <a class="lv-footer" href="{% url 'orders_list' %}?status=pending">See all</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endif %}
+                <li class="dropdown">
+                    <a data-toggle="dropdown" href=""><i class="tm-icon zmdi zmdi-more-vert"></i></a>
+                    <ul class="dropdown-menu dm-icon pull-right">
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'edit_profile' %}"><i class="zmdi zmdi-account"></i> Modify Profile</a></li>
+                        <li><a href="{% url 'account_logout' %}"><i class="zmdi zmdi-time-restore"></i> Log out</a></li>
+                        {% else %}
+                        <li><a href="{% url 'account_login' %}"><i class="tm-icon zmdi zmdi-sign-in"></i> Login</a> </li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</header>

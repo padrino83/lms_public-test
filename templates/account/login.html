@@ -1,0 +1,61 @@
+{% extends "account/base_login.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load bootstrap3 %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Acceder" %}{% endblock %}
+
+{% block content %}
+    <div class="lc-block toggled" id="l-login">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 text-center">
+                <img src="{% static 'img/logosquare.png' %}" alt="DOUBLE O CONTRACTING LLC." class="img-responsive center-block">
+                <br><h4 class="text-center">{% include 'title.html' %}</h4>
+            </div>
+        </div>
+        <hr>
+        <form method="post" role="form" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value|default:'/' }}" />
+            <div class="input-group m-b-20">
+                <span class="input-group-addon"><i class="zmdi zmdi-account"></i></span>
+                    <div class="fg-line">
+                        <input type="text" class="form-control" placeholder="Username" name="login" id="id_login" required="">
+                        {{ form.login.errors }}
+                    </div>
+            </div>
+
+            <div class="input-group m-b-20">
+                <span class="input-group-addon"><i class="zmdi zmdi-male"></i></span>
+                <div class="fg-line">
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="id_password" required="">
+                    {{ form.password.errors }}
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <button class="btn btn-danger btn--raised">Login</button>
+
+            <!--
+            <ul class="login-navigation">
+                <li data-block="#l-forget-password" class="bgm-orange">
+                    <a href="{% url 'account_reset_password' %}">Forgot your password?</a>
+                </li>
+                <li data-block="#l-register" class="bgm-red">
+                    <a href="{% url 'account_signup' %}">Sign Up</a>
+                </li>
+            </ul>
+            -->
+        </form>
+        <div class="row">
+            <div class="col-md-12 m-b-20 text-center">
+                <hr>
+                <a href="{% url 'account_reset_password' %}">Forgot your password?</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

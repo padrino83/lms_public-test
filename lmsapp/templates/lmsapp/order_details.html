@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap3 %}
+{% load thumbnail %}
+{% load i18n %}
+
+{% block title %}Load{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="block-header">
+    <h2>Order<small>{{ order }}</small></h2>
+
+    <ul class="actions">
+        <li>
+            <a href="{% url 'orders_list' %}">
+                <h1><i class="zmdi zmdi-undo"></i></h1>
+            </a>
+        </li>
+        {% if user.userprofile and user.userprofile.is_operator %}
+        <li class="dropdown">
+            <a href="" data-toggle="dropdown">
+                <i class="zmdi zmdi-more-vert"></i>
+            </a>
+            
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li>
+                    <a data-toggle="modal" href="#modalOrderDelete" onClick="$('#modalOrderDelete').modal();">
+                        <i class="zmdi zmdi-delete"></i> Delete
+                    </a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+
+<div class="card">
+    <div class="card-body card-padding">
+        <div class="row m-t-5 p-0 m-b-5">
+            <div class="col-xs-12">
+                <h3 class="text-center">{% include 'company.html' %}<br>{% include 'address.html' %}</h3>
+            </div>
+        </div>
+         <div class="row">
+             <div class="col-xs-12">
+                 <hr style="border-top: 2px solid #000; margin-top: 20px;margin-bottom: 0px;">
+                 <h4 class="text-center">Date: {{ order.date_added }}</h4>
+                 <hr style="border-top: 2px solid #000; margin-top: 0px;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8">
+                <h4>CLIENT: {{ order.customer }}</h4>
+            </div>
+            <div class="col-xs-4">
+                <h5>STATUS: {{ order.get_status_display }}</h5>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12"><hr style="border-top: 2px solid #000;"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="table-responsive">
+                    <table class="table" style="width: 100%; max-width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="border: 2px solid #000;">Pick Up</th>
+                                <th class="text-center" style="border: 2px solid #000;">Drop Off</th>
+                                <th class="text-center" style="border: 2px solid #000;">Product</th>
+                                {% if user.userprofile and user.userprofile.is_operator %}
+                                <th class="text-center" style="border: 2px solid #000;">Rate</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ order.pickup_location.name }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ order.dropoff_location.name }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ order.product }}</h5></td>
+                                {% if user.userprofile and user.userprofile.is_operator %}
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ order.price }}</h5></td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if user.userprofile and user.userprofile.is_operator %}
+        <div class="row">
+            <div class="col-xs-12">
+                <h3>LOADS</h3>
+                <div class="table-responsive">
+                    <table class="table" style="width: 100%; max-width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="border: 2px solid #000;">Tons</th>
+                                <th class="text-center" style="border: 2px solid #000;">Driver</th>
+                                <th class="text-center" style="border: 2px solid #000;">Vehicle</th>
+                                <th class="text-center" style="border: 2px solid #000;">Driver earned</th>
+                                {% if user.userprofile.is_operator %}
+                                <th class="text-center" style="border: 2px solid #000;">Rate</th>
+                                <th class="text-center" style="border: 2px solid #000;">Total</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for load in order.load_set.all %}
+                            <tr>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ load.quantity }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ load.driver.get_full_name }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ load.vehicle }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>${{ load.total_driver_amount }}</h5></td>
+                                {% if user.userprofile.is_operator %}
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>{{ load.order.price }}</h5></td>
+                                <td style="border: 2px solid #000; padding-right: 10px; padding-left: 10px;"><h5>${{ load.total_amount }}</h5></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            {% if user.userprofile.is_operator %}
+                            <tr>
+                                <td class="text-right" style="padding-right: 10px;" colspan="5"><h4>Total:</h4></td>
+                                <td class="text-left" style="padding-left: 10px;"><h4>${{ order.total_amount }}</h4></td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<a href="{% url 'edit_order' order.pk %}"  class="btn btn-float bgm-blue m-btn" data-action="edit"><i class="zmdi zmdi-edit"></i></a>
+
+{% if user.userprofile and user.userprofile.is_operator %}
+<!-- Modal delete order -->	
+<div class="modal fade" id="modalOrderDelete" tabindex="-1" role="dialog" aria-hidden="true" data-modal-color="red">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="zmdi zmdi-delete"></i> Delete order</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        Do you really want to proceed deleting order {{ order }}?
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'order_delete' pk=order.pk %}" class="btn btn-danger">Yes, delete</a>
+                <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+
+{% block extra_scripts %}
+{% endblock %}

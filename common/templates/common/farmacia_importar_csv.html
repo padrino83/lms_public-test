@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load bootstrap3 %}
+
+{% block title %}Importar farmacias{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/chosen.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="block-header">
+    <ol class="breadcrumb">
+        <li><a href="/">Inicio</a></li>
+        <li class="active"> Importar farmacias</li>
+    </ol>
+    <br/>
+</div>
+<div class="card">
+    <div class="card-body card-padding">                     
+        <div class="">
+            <div class="row">
+                <div class="col-md-12"> 
+		    <form id="theme-contact" method="post" role="form" action="." enctype="multipart/form-data">
+		        {% csrf_token %}
+		        {% bootstrap_form form %}
+		        {% buttons %}
+		        <button type="submit" class="btn btn-block btn-success">Enviar</button>
+		        {% endbuttons %}
+		    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Script JS -->
+<script src="{% static 'js/chosen.jquery.min.js' %}"></script>
+
+<script type="text/javascript">
+    $('.chosen-select').chosen({
+	width: '100%',
+	allow_single_deselect: true
+    });
+</script>
+{% endblock %}

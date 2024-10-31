@@ -1,0 +1,113 @@
+{% load thumbnail %}
+
+<aside id="sidebar" class="sidebar c-overflow">
+    <div class="profile-menu">
+        <a href="">
+            <div class="profile-pic">
+                {% thumbnail user.userprofile.foto "24x24" crop="center" as im %}
+                <img src="{{ im.url }}" class="m-b" alt="{{ user }}">
+                {% endthumbnail %}
+            </div>
+            <div class="profile-info">
+                {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}
+                <i class="zmdi zmdi-caret-down"></i>
+            </div>
+        </a>
+        <ul class="main-menu">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'edit_profile' %}"><i class="zmdi zmdi-account"></i> Modify Profile</a></li>
+            <li><a href="{% url 'account_logout' %}"><i class="zmdi zmdi-time-restore"></i> Log out</a></li>
+            {% else %}
+            <li><a href="{% url 'account_login' %}"><i class="tm-icon zmdi zmdi-sign-in"></i> Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    <!--===========Area de MENU IZQUIERDO==============-->
+    <ul class="main-menu">
+        <li class="active">
+            <a href="/"><i class="zmdi zmdi-home"></i> Home</a>
+        </li>
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-assignment"></i> Loads Management</a>
+            <ul class="nav nav-children">
+                <li>
+                    <a href="{% url 'loads_list' %}"><i class="zmdi zmdi-view-list-alt"></i> Load's list</a>
+                </li>
+                <li>
+                    <a href="{% url 'driver_add_load' %}"><i class="zmdi zmdi-plus-circle-o"></i> Add New Load</a>
+                </li>
+            </ul>
+        </li>
+        {% if user.userprofile and user.userprofile.is_operator %}
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-assignment"></i> Orders Management</a>
+            <ul class="nav nav-children">
+                <li>
+                    <a href="{% url 'orders_list' %}"><i class="zmdi zmdi-view-list-alt"></i> Orders list</a>
+                </li>
+                <li>
+                    <a href="{% url 'add_order' %}"><i class="zmdi zmdi-plus-circle-o"></i> Add New Order</a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-receipt"></i> Invoices Management</a>
+            <ul class="nav nav-children">
+                <li>
+                    <a href="{% url 'invoice_list' %}"><i class="zmdi zmdi-view-list-alt"></i> Invoices list</a>
+                </li>
+                <li>
+                    <a href="{% url 'add_invoice' %}"><i class="zmdi zmdi-plus-circle-o"></i> Add New Invoice</a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-view-web zmdi-hc-fw"></i> Reports</a>
+            <ul>
+                <li>
+                    <a href="{% url 'report_loads_per_customer' %}"><i class="zmdi zmdi-view-list"></i> Loads by Customer</a>
+                </li>
+                <li>
+                    <a href="{%  url 'report_loads_by_driver' %}"><i class="zmdi zmdi-view-list"></i> Total Loads by Driver</a>
+                </li>
+{#                <li>#}
+{#                    <a href="#"><i class="zmdi zmdi-view-list"></i> Total Load</a>#}
+{#                </li>#}
+
+            </ul>
+        </li>
+
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-traffic"></i> Admin</a>
+            <ul class="nav nav-children">
+                <li>
+                    <a href="/admin/auth/user/"><i class="zmdi zmdi-accounts-alt"></i> Users list</a>
+                </li>
+                <li>
+                    <a href="/admin/auth/user/add/"><i class="zmdi zmdi-accounts-add"></i> Add User</a>
+                </li>
+                <li>
+                    <a href="/admin/lmsapp/vehicle/"><i class="zmdi zmdi-view-list-alt"></i> Vehicles List</a>
+                </li>
+                <li>
+                    <a href="/admin/lmsapp/vehicle/add/"><i class="zmdi zmdi-plus-circle-o"></i> Add Vehicle</a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="sub-menu">
+            <a href=""><i class="zmdi zmdi-accounts-list"></i> Customers Management</a>
+            <ul class="nav nav-children">
+                <li>
+                    <a href="{% url 'customers_list' %}"><i class="zmdi zmdi-accounts-alt"></i> Customers List</a>
+                </li>
+                <li>
+                    <a href="{% url 'add_customer' %}"><i class="zmdi zmdi-accounts-add"></i> Add Customer</a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+    </ul>
+</aside>
