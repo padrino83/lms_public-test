@@ -13,9 +13,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'lmsapp',
-    'simple_history',
-    'auditlog',
 ]
 
 MIDDLEWARE = [
