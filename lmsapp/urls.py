@@ -36,5 +36,6 @@ urlpatterns = [
     # path('report_orders_per_customer', views.report_orders_per_customer, name="report_orders_per_customer"),
     path('report_loads_by_driver/', views.report_loads_by_driver, name="report_loads_by_driver"),
     path('report_loads_per_customer/', views.report_loads_per_customer, name="report_loads_per_customer"),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('driver-input/', views.driver_input, name='driver_input'),
++ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
