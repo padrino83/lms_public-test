@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Driver Input</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+    form { max-width: 520px; display: grid; gap: 12px; }
+    label { font-weight: 600; }
+    input, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
+    button { padding: 12px 16px; border: 0; border-radius: 10px; cursor: pointer; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Driver Input</h1>
+
+  {% if messages %}
+    <ul>
+      {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div>
+        <label for="driver_name">Driver Name</label>
+        <input id="driver_name" name="driver_name" required>
+      </div>
+      <div>
+        <label for="truck_number">Truck #</label>
+        <input id="truck_number" name="truck_number" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="load_number">Load #</label>
+        <input id="load_number" name="load_number">
+      </div>
+      <div>
+        <label for="weight">Weight (tons)</label>
+        <input id="weight" name="weight" type="number" step="0.01">
+      </div>
+    </div>
+
+    <label for="pickup_location">Pickup</label>
+    <input id="pickup_location" name="pickup_location">
+
+    <label for="dropoff_location">Dropoff</label>
+    <input id="dropoff_location" name="dropoff_location">
+
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="3"></textarea>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
